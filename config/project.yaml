@@ -1,0 +1,33 @@
+af3:
+  image: /data/dops-plant-genomics/lady8018/af3/containers/alphafold3_custom.sif
+  model_dir: /apps/common/commercial/AlphaFold3/model
+  db_dir: /apps/datasets/alphafold3/public_databases
+
+paths:
+  fasta_root: inputs/fastas
+  json_input_dir: work/json/input
+  json_pipeline_dir: work/json/pipeline
+  results_dir: outputs
+
+workflow:
+  mode: monomer   # or multimer
+  pairing_strategy: all_vs_all   # only used in multimer mode
+
+selection:
+  left_group: plants
+  right_group: pathogens
+  query_name: P69B   # only used for one_vs_many
+
+resources:
+  data_pipeline:
+    partition: short
+    cpus: 8
+    mem: 64G
+    time: "02:00:00"
+
+  inference:
+    partition: short
+    gpus: 1
+    cpus: 8
+    mem: 64G
+    time: "02:00:00"

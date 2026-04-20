@@ -1,0 +1,10 @@
+proteins:
+  A:
+    fasta: /path/to/fastas/A.fasta
+  B:
+    fasta: /path/to/fastas/B.fasta
+
+pairs:
+  - name: A_B
+    chain1: A
+    chain2: B
