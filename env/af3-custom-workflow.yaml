@@ -1,7 +1,8 @@
 name: af3-custom-workflow
 channels:
+  - bioconda
   - conda-forge
 dependencies:
   - python=3.11
-  - snakemake
+  - snakemake-minimal
   - pyyaml
