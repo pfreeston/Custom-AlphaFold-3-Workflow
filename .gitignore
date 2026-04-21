@@ -205,3 +205,35 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Snakemake
+.snakemake/
+
+# Snakemake working directories
+work/
+outputs/
+results/
+
+# Temporary / logs
+logs/
+*.out
+*.err
+
+# AlphaFold / AF3 outputs
+*.pdb
+*.cif
+*.jsonl
+*.npz
+*.pkl
+
+# MSA / alignment files
+*.a3m
+*.sto
+*.hhr
+
+# Large intermediate data
+*.npy
+
+# Containers / HPC artifacts
+*.sif
+singularity/
