@@ -47,7 +47,8 @@ rule make_monomer_json:
         fasta=lambda wc: proteins[wc.name]
     output:
         json=f"{MONO_JSON_DIR}/{{name}}.json"
-    threads: 1
+    resources:
+        cpus=1
     run:
         from af3custom.monomer_json_builder import write_monomer_json
         Path(MONO_JSON_DIR).mkdir(parents=True, exist_ok=True)
@@ -58,6 +59,11 @@ rule make_monomer_json:
 # -------------------------
 
 rule data_pipeline:
+    resources:
+        partition=config["resources"]["data_pipeline"]["partition"],
+        mem_mb=config["resources"]["data_pipeline"]["mem_mb"],
+        time=config["resources"]["data_pipeline"]["time"],
+        cpus=config["resources"]["data_pipeline"]["cpus"]
     input:
         json=f"{MONO_JSON_DIR}/{{name}}.json"
     output:
@@ -91,11 +97,11 @@ rule build_multimer_json:
         p2=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('__')[1]}"
     output:
         json=f"{MULTI_JSON_DIR}/{{name}}.json"
+    resources:
+        cpus=1
     run:
         from af3custom.multimer_json_builder import build_single_multimer_json
-
         Path(MULTI_JSON_DIR).mkdir(parents=True, exist_ok=True)
-
         p1, p2 = wildcards.name.split("__")
         build_single_multimer_json(config, p1, p2)
 
@@ -110,12 +116,16 @@ def get_input_json(wildcards):
         return f"{MULTI_JSON_DIR}/{wildcards.name}.json"
 
 rule run_inference:
+    resources:
+        partition=config["resources"]["inference"]["partition"],
+        mem_mb=config["resources"]["inference"]["mem_mb"],
+        time=config["resources"]["inference"]["time"],
+        cpus=config["resources"]["inference"]["cpus"],
+        gres=config["resources"]["inference"]["gres"]
     input:
         json=get_input_json
     output:
         outdir=directory(f"{RESULTS_DIR}/{{name}}")
-    threads:
-        config["resources"]["inference"]["cpus"]
     params:
         image=config["af3"]["image"],
         db_dir=config["af3"]["db_dir"],
@@ -129,7 +139,7 @@ rule run_inference:
             --bind {params.db_dir}:/root/public_databases \
             --bind {params.model_dir}:/root/models \
             --bind {output.outdir}:/root/af_output \
-            --bind {MONO_JSON_DIR if MODE == "monomer" else MULTI_JSON_DIR}:/root/af_input \
+            --bind work/json:/root/af_input \
             {params.image} \
             python3 /app/alphafold/run_alphafold.py \
             --json_path=/root/af_input/{wildcards.name}.json \
