@@ -19,7 +19,7 @@ rule make_monomer_json:
         json="{json_dir}/{name}.json"
     params:
         outdir=JSON_DIR
-    threads: config["resources"]["json_build"]["cpus"]
+    threads: 1
     run:
         from af3custom.monomer_json_builder import write_monomer_json
         Path(params.outdir).mkdir(parents=True, exist_ok=True)
