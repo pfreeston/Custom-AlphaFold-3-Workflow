@@ -1,7 +1,7 @@
 configfile: "config/project.yaml"
 
 from pathlib import Path
-from scripts.targets import get_proteins
+from af3custom.targets import get_proteins
 
 proteins = get_proteins(config)
 protein_names = sorted(proteins.keys())
@@ -21,7 +21,7 @@ rule make_monomer_json:
     params:
         outdir=JSON_DIR
     run:
-        from scripts.monomer_json_builder import write_monomer_json
+        from af3custom.monomer_json_builder import write_monomer_json
         Path(params.outdir).mkdir(parents=True, exist_ok=True)
         write_monomer_json(wildcards.name, input.fasta, params.outdir)
 
