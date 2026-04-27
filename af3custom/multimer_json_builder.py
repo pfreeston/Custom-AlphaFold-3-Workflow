@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 import copy
 
-from scripts.targets import get_proteins, get_pairs
+from af3custom.targets import get_proteins, get_pairs
 
 
 def load_single_chain(path: Path):
