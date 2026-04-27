@@ -30,12 +30,12 @@ resources:
   data_pipeline:
     partition: short
     cpus: 8
-    mem: 64000
+    mem_mb: 64000
     time: "02:00:00"
 
   inference:
     partition: short
     gres: "gpu:h100:1"
     cpus: 8
-    mem: 64000
+    mem_mb: 64000
     time: "02:00:00"
