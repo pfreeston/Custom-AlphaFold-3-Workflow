@@ -11,15 +11,16 @@ PIPELINE_DIR = config["paths"]["json_pipeline_dir"]
 
 rule all:
     input:
-        expand("work/json/pipeline/{name}", name=protein_names)
+        expand(f"{PIPELINE_DIR}/{{name}}", name=protein_names)
 
 rule make_monomer_json:
     input:
         fasta=lambda wc: proteins[wc.name]
     output:
-        json="{json_dir}/{name}.json"
+        json=f"{JSON_DIR}/{{name}}.json"
     params:
         outdir=JSON_DIR
+    threads: 1
     run:
         from af3custom.monomer_json_builder import write_monomer_json
         Path(params.outdir).mkdir(parents=True, exist_ok=True)
@@ -27,9 +28,9 @@ rule make_monomer_json:
 
 rule data_pipeline:
     input:
-        json="work/json/input/{name}.json"
+        json=f"{JSON_DIR}/{{name}}.json"
     output:
-        outdir=directory("work/json/pipeline/{name}")
+        outdir=directory(f"{PIPELINE_DIR}/{{name}}")
     params:
         image=config["af3"]["image"],
         db_dir=config["af3"]["db_dir"]
@@ -39,9 +40,9 @@ rule data_pipeline:
         singularity exec \
             --bind {params.db_dir}:/root/public_databases \
             --bind {output.outdir}:/root/af_output \
-            --bind work/json/input:/root/af_input \
+            --bind {JSON_DIR}:/root/af_input \
             {params.image} \
-            uv run python3 /app/alphafold/run_alphafold.py \
+            python3 /app/alphafold/run_alphafold.py \
             --json_path=/root/af_input/{wildcards.name}.json \
             --db_dir=/root/public_databases \
             --output_dir=/root/af_output \
