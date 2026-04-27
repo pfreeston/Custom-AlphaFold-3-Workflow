@@ -5,8 +5,9 @@ jobscript: "profiles/slurm/jobscript.sh"
 
 jobs: 100
 
+cluster: null
 
-cluster: >
+cluster-submit: >
   sbatch
   --partition={resources.partition}
   --cpus-per-task={resources.cpus}
