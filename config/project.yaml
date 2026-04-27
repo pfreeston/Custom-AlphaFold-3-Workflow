@@ -5,29 +5,37 @@ af3:
 
 paths:
   fasta_root: inputs/fastas
-  json_input_dir: work/json/input
+  monomer_json_dir: work/json/monomers
+  multimer_json_dir: work/json/multimers
   json_pipeline_dir: work/json/pipeline
   results_dir: outputs
 
 workflow:
-  mode: monomer   # or multimer
-  pairing_strategy: all_vs_all   # only used in multimer mode
+  # Workflow modes:
+  # monomer  → FASTA → pipeline → inference
+  # multimer → FASTA → pipeline → multimer → inference
+  mode: monomer
+  pairing_strategy: all_vs_all
 
 selection:
   left_group: plants
   right_group: pathogens
-  query_name: P69B   # only used for one_vs_many
+  query_name: P69B
 
 resources:
+
+  json_build:
+    cpus: 1
+
   data_pipeline:
     partition: short
     cpus: 8
-    mem: 64G
+    mem: 64000
     time: "02:00:00"
 
   inference:
     partition: short
-    gpus: 1
+    gres: "gpu:h100:1"
     cpus: 8
-    mem: 64G
+    mem: 64000
     time: "02:00:00"
