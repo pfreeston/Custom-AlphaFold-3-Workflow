@@ -62,11 +62,11 @@ rule make_monomer_json:
 # -------------------------
 
 rule data_pipeline:
+    threads: config["resources"]["data_pipeline"]["cpus"]
     resources:
         partition=config["resources"]["data_pipeline"]["partition"],
         mem_mb=config["resources"]["data_pipeline"]["mem_mb"],
-        time=config["resources"]["data_pipeline"]["time"],
-        cpus=config["resources"]["data_pipeline"]["cpus"]
+        time=config["resources"]["data_pipeline"]["time"]
     input:
         json=f"{MONO_JSON_DIR}/{{name}}.json"
     output:
@@ -125,11 +125,11 @@ def get_input_json(wildcards):
         return f"{MULTI_JSON_DIR}/{wildcards.name}.json"
 
 rule run_inference:
+    threads: config["resources"]["inference"]["cpus"]
     resources:
         partition=config["resources"]["inference"]["partition"],
         mem_mb=config["resources"]["inference"]["mem_mb"],
         time=config["resources"]["inference"]["time"],
-        cpus=config["resources"]["inference"]["cpus"],
         gres=config["resources"]["inference"]["gres"]
     input:
         json=get_input_json
