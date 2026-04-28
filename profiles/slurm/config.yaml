@@ -14,9 +14,10 @@ default-resources:
 
 
 slurm:
+  account: "dops-plant-genomics"
   partition: "{resources.partition}"
   time: "{resources.time}"
-  cpus-per-task: "{resources.cpus}"
+  cpus-per-task: "{threads}"
   mem: "{resources.mem_mb}"
   gres: "{resources.gres or ''}"
   mail-user: "phoebe.freeston@biology.ox.ac.uk"
