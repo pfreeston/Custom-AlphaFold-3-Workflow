@@ -6,3 +6,7 @@ dependencies:
   - python=3.11
   - snakemake-minimal
   - pyyaml
+  - pip
+  - pip:
+      - snakemake-executor-plugin-slurm
+
