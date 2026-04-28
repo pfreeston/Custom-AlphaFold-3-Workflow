@@ -1,18 +1,9 @@
 # profiles/slurm/config.yaml
 
-jobscript: "profiles/slurm/jobscript.sh"
+executor: slurm
 
 
 jobs: 100
-
-
-cluster: >
-  sbatch
-  --partition={resources.partition}
-  --cpus-per-task={resources.cpus}
-  --mem={resources.mem_mb}
-  --time={resources.time}
-  {('--gres=' + resources.gres) if hasattr(resources, 'gres') else ''}
 
 
 default-resources:
@@ -20,6 +11,17 @@ default-resources:
   mem_mb: 2000
   time: "00:30:00"
   cpus: 1
+
+
+slurm:
+  partition: "{resources.partition}"
+  time: "{resources.time}"
+  cpus-per-task: "{resources.cpus}"
+  mem: "{resources.mem_mb}"
+  gres: "{resources.gres}"
+  mail-user: "phoebe.freeston@biology.ox.ac.uk"
+  mail-type: "BEGIN,END,FAIL"
+  job-name: "af3_{rule}_{wildcards.name}"
 
 
 printshellcmds: true
@@ -30,5 +32,3 @@ latency-wait: 60
 
 max-jobs-per-second: 5
 max-status-checks-per-second: 10
-
-
