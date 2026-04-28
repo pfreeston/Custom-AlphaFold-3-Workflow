@@ -47,11 +47,11 @@ rule make_monomer_json:
         fasta=lambda wc: proteins[wc.name]
     output:
         json=f"{MONO_JSON_DIR}/{{name}}.json"
+    threads: 1
     resources:
         partition="short",
         mem_mb=2000,
-        time="00:10:00",
-        cpus=1
+        time="00:10:00"
     run:
         from af3custom.monomer_json_builder import write_monomer_json
         Path(MONO_JSON_DIR).mkdir(parents=True, exist_ok=True)
@@ -106,8 +106,11 @@ rule build_multimer_json:
         p2=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('__')[1]}"
     output:
         json=f"{MULTI_JSON_DIR}/{{name}}.json"
+    threads: 1
     resources:
-        cpus=1
+        partition="short",
+        mem_mb=2000,
+        time="00:10:00"
     run:
         from af3custom.multimer_json_builder import build_single_multimer_json
         Path(MULTI_JSON_DIR).mkdir(parents=True, exist_ok=True)
