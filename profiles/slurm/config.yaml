@@ -18,7 +18,7 @@ slurm:
   time: "{resources.time}"
   cpus-per-task: "{resources.cpus}"
   mem: "{resources.mem_mb}"
-  gres: "{resources.gres}"
+  gres: "{resources.gres or ''}"
   mail-user: "phoebe.freeston@biology.ox.ac.uk"
   mail-type: "BEGIN,END,FAIL"
   job-name: "af3_{rule}_{wildcards.name}"
