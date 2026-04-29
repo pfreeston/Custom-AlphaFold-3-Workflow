@@ -10,7 +10,9 @@ from af3custom.targets import get_proteins, get_pairs
 proteins = get_proteins(config)
 protein_names = sorted(proteins.keys())
 
+
 MONO_JSON_DIR = config["paths"]["monomer_json_dir"]
+JSON_ROOT = Path(MONO_JSON_DIR).parent
 MULTI_JSON_DIR = config["paths"]["multimer_json_dir"]
 PIPELINE_DIR = config["paths"]["json_pipeline_dir"]
 RESULTS_DIR = config["paths"]["results_dir"]
@@ -47,11 +49,7 @@ rule make_monomer_json:
         fasta=lambda wc: proteins[wc.name]
     output:
         json=f"{MONO_JSON_DIR}/{{name}}.json"
-    threads: 1
-    resources:
-        partition="short",
-        mem_mb=2000,
-        time="00:10:00"
+    threads: config["resources"]["json_build"]["threads"]
     run:
         from af3custom.monomer_json_builder import write_monomer_json
         Path(MONO_JSON_DIR).mkdir(parents=True, exist_ok=True)
@@ -62,7 +60,7 @@ rule make_monomer_json:
 # -------------------------
 
 rule data_pipeline:
-    threads: config["resources"]["data_pipeline"]["cpus"]
+    threads: config["resources"]["data_pipeline"]["threads"]
     resources:
         partition=config["resources"]["data_pipeline"]["partition"],
         mem_mb=config["resources"]["data_pipeline"]["mem_mb"],
@@ -106,11 +104,7 @@ rule build_multimer_json:
         p2=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('__')[1]}"
     output:
         json=f"{MULTI_JSON_DIR}/{{name}}.json"
-    threads: 1
-    resources:
-        partition="short",
-        mem_mb=2000,
-        time="00:10:00"
+    threads: config["resources"]["json_build"]["threads"]
     run:
         from af3custom.multimer_json_builder import build_single_multimer_json
         Path(MULTI_JSON_DIR).mkdir(parents=True, exist_ok=True)
@@ -128,7 +122,7 @@ def get_input_json(wildcards):
         return f"{MULTI_JSON_DIR}/{wildcards.name}.json"
 
 rule run_inference:
-    threads: config["resources"]["inference"]["cpus"]
+    threads: config["resources"]["inference"]["threads"]
     resources:
         partition=config["resources"]["inference"]["partition"],
         mem_mb=config["resources"]["inference"]["mem_mb"],
@@ -156,7 +150,7 @@ rule run_inference:
             --bind {params.db_dir}:/root/public_databases \
             --bind {params.model_dir}:/root/models \
             --bind {output.outdir}:/root/af_output \
-            --bind work/json:/root/af_input \
+            --bind {JSON_ROOT}:/root/af_input \
             {params.image} \
             python3 /app/alphafold/run_alphafold.py \
             --json_path=/root/af_input/{wildcards.name}.json \

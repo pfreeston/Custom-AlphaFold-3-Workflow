@@ -25,17 +25,17 @@ selection:
 resources:
 
   json_build:
-    cpus: 1
+    threads: 1
 
   data_pipeline:
     partition: short
-    cpus: 8
     mem_mb: 64000
     time: "02:00:00"
+    threads: 8 
 
   inference:
     partition: short
     gres: "gpu:h100:1"
-    cpus: 8
     mem_mb: 64000
     time: "02:00:00"
+    threads: 8 
