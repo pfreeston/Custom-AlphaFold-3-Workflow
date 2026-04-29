@@ -7,6 +7,8 @@ from af3custom.targets import get_proteins, get_pairs
 # SETUP
 # -------------------------
 
+shell.prefix("module load Singularity; ")
+
 proteins = get_proteins(config)
 protein_names = sorted(proteins.keys())
 
