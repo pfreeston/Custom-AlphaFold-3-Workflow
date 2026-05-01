@@ -79,13 +79,11 @@ rule data_pipeline:
         db_dir=config["af3"]["db_dir"]
     shell:
         """
-        module load Apptainer
-
         mkdir -p {output.outdir}
         mkdir -p logs/data_pipeline
 
         /usr/bin/time -v \
-        apptainer exec \
+        singularity exec \
             --bind {params.db_dir}:/root/public_databases \
             --bind {output.outdir}:/root/af_output \
             --bind {MONO_JSON_DIR}:/root/af_input \
@@ -148,13 +146,11 @@ rule run_inference:
         model_dir=config["af3"]["model_dir"]
     shell:
         """
-        module load Apptainer 
-
         mkdir -p {output.outdir}
         mkdir -p logs/inference
 
         /usr/bin/time -v \
-        apptainer exec \
+        singularity exec \
             --nv \
             --env JAX_PLATFORMS=cuda \
             --bind {params.db_dir}:/root/public_databases \
