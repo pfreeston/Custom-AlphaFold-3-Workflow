@@ -49,9 +49,9 @@ rule make_monomer_json:
         fasta=lambda wc: proteins[wc.name]
     output:
         json=f"{MONO_JSON_DIR}/{{name}}.json"
+    threads: 1
     resources:
-        partition=config["resources"]["json_build"]["partition"],    
-    threads: config["resources"]["json_build"]["threads"]
+        slurm_partition="short"    
     run:
         from af3custom.monomer_json_builder import write_monomer_json
         Path(MONO_JSON_DIR).mkdir(parents=True, exist_ok=True)
@@ -62,11 +62,13 @@ rule make_monomer_json:
 # -------------------------
 
 rule data_pipeline:
-    threads: config["resources"]["data_pipeline"]["threads"]
+    threads:8
     resources:
-        partition=config["resources"]["data_pipeline"]["partition"],
-        mem_mb=config["resources"]["data_pipeline"]["mem_mb"],
-        runtime=config["resources"]["data_pipeline"]["runtime"]
+        slurm_partition="short",
+        mem_mb=64000,
+        runtime=120,
+        constraint="fabric:HDR|fabric:HDR100",
+        slurm_account="dops-plant-genomics"
     input:
         json=f"{MONO_JSON_DIR}/{{name}}.json"
     output:
@@ -84,7 +86,7 @@ rule data_pipeline:
         mkdir -p logs/data_pipeline
 
         /usr/bin/time -v \
-        singularity exec \
+        apptainer exec \
             --bind {params.db_dir}:/root/public_databases \
             --bind {output.outdir}:/root/af_output \
             --bind {MONO_JSON_DIR}:/root/af_input \
@@ -94,7 +96,7 @@ rule data_pipeline:
             --db_dir=/root/public_databases \
             --output_dir=/root/af_output \
             --run_data_pipeline=true \
-            --run_inference=false \
+            --run_inference=false
         &> {log}
         """
 
@@ -108,9 +110,9 @@ rule build_multimer_json:
         p2=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('__')[1]}"
     output:
         json=f"{MULTI_JSON_DIR}/{{name}}.json"
+    threads:1
     resources:
-        partition=config["resources"]["json_build"]["partition"],  
-    threads: config["resources"]["json_build"]["threads"]
+        slurm_partition="short"
     run:
         from af3custom.multimer_json_builder import build_single_multimer_json
         Path(MULTI_JSON_DIR).mkdir(parents=True, exist_ok=True)
@@ -128,12 +130,14 @@ def get_input_json(wildcards):
         return f"{MULTI_JSON_DIR}/{wildcards.name}.json"
 
 rule run_inference:
-    threads: config["resources"]["inference"]["threads"]
+    threads: 8
     resources:
-        partition=config["resources"]["inference"]["partition"],
-        mem_mb=config["resources"]["inference"]["mem_mb"],
-        runtime=config["resources"]["inference"]["runtime"],
-        gpus=config["resources"]["inference"]["gpus"]
+        slurm_partition="short",
+        mem_mb=64000,
+        runtime=120,
+        gpus=1,
+        constraint="fabric:HDR|fabric:HDR100",
+        slurm_account="dops-plant-genomics"
     input:
         json=get_input_json
     output:
@@ -152,7 +156,7 @@ rule run_inference:
         mkdir -p logs/inference
 
         /usr/bin/time -v \
-        singularity exec \
+        apptainer exec \
             --nv \
             --env JAX_PLATFORMS=cuda \
             --bind {params.db_dir}:/root/public_databases \
@@ -166,6 +170,6 @@ rule run_inference:
             --db_dir=/root/public_databases \
             --output_dir=/root/af_output \
             --run_data_pipeline=false \
-            --run_inference=true \
+            --run_inference=true
         &> {log}
         """

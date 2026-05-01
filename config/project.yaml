@@ -21,22 +21,3 @@ selection:
   left_group: plants
   right_group: pathogens
   query_name: P69B
-
-resources:
-
-  json_build:
-    partition: short
-    threads: 1
-
-  data_pipeline:
-    partition: short
-    mem_mb: 64000
-    runtime: 120
-    threads: 8 
-
-  inference:
-    partition: short
-    mem_mb: 64000
-    runtime: 120
-    threads: 8
-    gpus: 1
