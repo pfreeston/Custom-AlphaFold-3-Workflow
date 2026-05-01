@@ -66,7 +66,7 @@ rule data_pipeline:
     resources:
         partition=config["resources"]["data_pipeline"]["partition"],
         mem_mb=config["resources"]["data_pipeline"]["mem_mb"],
-        time=config["resources"]["data_pipeline"]["time"]
+        runtime=config["resources"]["data_pipeline"]["runtime"]
     input:
         json=f"{MONO_JSON_DIR}/{{name}}.json"
     output:
@@ -130,8 +130,8 @@ rule run_inference:
     resources:
         partition=config["resources"]["inference"]["partition"],
         mem_mb=config["resources"]["inference"]["mem_mb"],
-        time=config["resources"]["inference"]["time"],
-        gres=config["resources"]["inference"]["gres"]
+        runtime=config["resources"]["inference"]["runtime"],
+        gpus=config["resources"]["inference"]["gpus"]
     input:
         json=get_input_json
     output:
