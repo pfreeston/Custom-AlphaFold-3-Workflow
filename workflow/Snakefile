@@ -77,7 +77,9 @@ rule data_pipeline:
         image=config["af3"]["image"],
         db_dir=config["af3"]["db_dir"]
     shell:
-        r"""
+        """
+        module load Apptainer
+
         mkdir -p {output.outdir}
         mkdir -p logs/data_pipeline
 
@@ -143,7 +145,9 @@ rule run_inference:
         db_dir=config["af3"]["db_dir"],
         model_dir=config["af3"]["model_dir"]
     shell:
-        r"""
+        """
+        module load Apptainer 
+
         mkdir -p {output.outdir}
         mkdir -p logs/inference
 
