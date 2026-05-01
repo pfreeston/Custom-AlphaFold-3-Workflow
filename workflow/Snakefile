@@ -67,7 +67,6 @@ rule data_pipeline:
         slurm_partition="short",
         mem_mb=64000,
         runtime=120,
-        constraint="fabric:HDR|fabric:HDR100",
         slurm_account="dops-plant-genomics"
     input:
         json=f"{MONO_JSON_DIR}/{{name}}.json"
@@ -136,7 +135,6 @@ rule run_inference:
         mem_mb=64000,
         runtime=120,
         gpus=1,
-        constraint="fabric:HDR|fabric:HDR100",
         slurm_account="dops-plant-genomics"
     input:
         json=get_input_json
