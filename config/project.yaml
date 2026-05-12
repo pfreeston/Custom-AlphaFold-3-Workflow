@@ -5,10 +5,12 @@ af3:
 
 paths:
   fasta_root: inputs/fastas
+  json_root: work/json
   monomer_json_dir: work/json/monomers
   multimer_json_dir: work/json/multimers
   json_pipeline_dir: work/json/pipeline
   results_dir: outputs
+  json_input_dir: work/json/input
 
 workflow:
   # Workflow modes:

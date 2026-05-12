@@ -11,8 +11,8 @@ proteins = get_proteins(config)
 protein_names = sorted(proteins.keys())
 
 
+JSON_ROOT = config["paths"]["json_root"]
 MONO_JSON_DIR = config["paths"]["monomer_json_dir"]
-JSON_ROOT = Path(MONO_JSON_DIR).parent
 MULTI_JSON_DIR = config["paths"]["multimer_json_dir"]
 PIPELINE_DIR = config["paths"]["json_pipeline_dir"]
 RESULTS_DIR = config["paths"]["results_dir"]
@@ -103,13 +103,11 @@ rule data_pipeline:
 
 rule build_multimer_json:
     input:
-        p1=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('__')[0]}",
-        p2=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('__')[1]}"
+        p1=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('__')[0]}/{wc.name.split('__')[0].lower()}/{wc.name.split('__')[0].lower()}_data.json",
+        p2=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('__')[1]}/{wc.name.split('__')[1].lower()}/{wc.name.split('__')[1].lower()}_data.json"
     output:
         json=f"{MULTI_JSON_DIR}/{{name}}.json"
-    threads:1
-    resources:
-        slurm_partition="short"
+    threads: 1
     run:
         from af3custom.multimer_json_builder import build_single_multimer_json
         Path(MULTI_JSON_DIR).mkdir(parents=True, exist_ok=True)
@@ -133,7 +131,8 @@ rule run_inference:
         mem_mb=64000,
         runtime=120,
         gpus=1,
-        slurm_account="dops-plant-genomics"
+        slurm_account="dops-plant-genomics",
+        slurm_extra="--mail-type=BEGIN,END,FAIL"
     input:
         json=get_input_json
     output:

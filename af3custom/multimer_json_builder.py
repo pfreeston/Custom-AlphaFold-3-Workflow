@@ -4,7 +4,6 @@ import copy
 
 from af3custom.targets import get_proteins, get_pairs
 
-
 def load_single_chain(path: Path):
     data = json.loads(path.read_text())
 
@@ -22,7 +21,7 @@ def set_chain_id(chain_obj, chain_id):
 
 def build_single_multimer_json(config, p1, p2):
     pipeline_dir = Path(config["paths"]["json_pipeline_dir"])
-    outdir = Path(config["paths"]["json_input_dir"])
+    outdir = Path(config["paths"]["multimer_json_dir"])
     outdir.mkdir(parents=True, exist_ok=True)
 
     path1 = find_pipeline_json(pipeline_dir, p1)
@@ -49,7 +48,8 @@ def build_single_multimer_json(config, p1, p2):
 
 
 def find_pipeline_json(pipeline_dir: Path, name: str) -> Path:
-    matches = list(pipeline_dir.glob(f"{name}/*_data.json"))
+    inner = name.lower()
+    matches = list(pipeline_dir.glob(f"{name}/{inner}/{inner}_data.json"))
 
     if not matches:
         raise FileNotFoundError(f"No pipeline JSON found for {name}")
