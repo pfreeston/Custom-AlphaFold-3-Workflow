@@ -4,7 +4,6 @@ import hashlib
 from pathlib import Path
 
 
-
 def read_fasta_sequence(fasta_path: str) -> str:
     sequence_parts = []
 
