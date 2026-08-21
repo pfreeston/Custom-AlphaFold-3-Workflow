@@ -21,7 +21,7 @@ MODE = config["workflow"]["mode"]
 
 if MODE == "multimer":
     pairs = get_pairs(config, proteins)
-    pair_names = [f"{p1}__{p2}" for p1, p2 in pairs]
+    pair_names = [f"{p1}__){p2}" for p1, p2 in pairs]
 
 # -------------------------
 # TARGETS
