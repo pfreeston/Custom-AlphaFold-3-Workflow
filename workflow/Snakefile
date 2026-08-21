@@ -45,6 +45,8 @@ rule all:
 # -------------------------
 
 rule make_monomer_json:
+    wildcard_constraints:
+        name=r"[^/]+"
     input:
         fasta=lambda wc: proteins[wc.name]
     output:
@@ -62,6 +64,8 @@ rule make_monomer_json:
 # -------------------------
 
 rule data_pipeline:
+    wildcard_constraints:
+        name=r"[^/]+"
     threads:8
     resources:
         slurm_partition="short",
