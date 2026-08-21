@@ -75,7 +75,8 @@ rule data_pipeline:
     input:
         json=f"{MONO_JSON_DIR}/{{name}}.json"
     output:
-        outdir=directory(f"{PIPELINE_DIR}/{{name}}")
+        outdir=directory(f"{PIPELINE_DIR}/{{name}}"),
+        data_json=f"{PIPELINE_DIR}/{{name}}/{{name}}/{{name}}_data.json"
     log:
         "logs/data_pipeline/{name}.log"
     params:
