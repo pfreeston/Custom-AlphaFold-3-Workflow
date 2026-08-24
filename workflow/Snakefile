@@ -108,8 +108,8 @@ rule data_pipeline:
 
 rule build_multimer_json:
     input:
-        p1=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('__')[0]}/{wc.name.split('__')[0].lower()}/{wc.name.split('__')[0].lower()}_data.json",
-        p2=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('__')[1]}/{wc.name.split('__')[1].lower()}/{wc.name.split('__')[1].lower()}_data.json"
+        p1=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('**')[0]}/{wc.name.split('**')[0]}/{wc.name.split('**')[0]}_data.json",
+        p2=lambda wc: f"{PIPELINE_DIR}/{wc.name.split('**')[1]}/{wc.name.split('**')[1]}/{wc.name.split('**')[1]}_data.json"
     output:
         json=f"{MULTI_JSON_DIR}/{{name}}.json"
     threads: 1

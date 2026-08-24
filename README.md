@@ -53,3 +53,19 @@ conda activate af3-custom-workflow
 ```         
 snakemake   --snakefile workflow/Snakefile   --executor slurm   --configfile config/project.yaml   --config workflow="{mode: multimer}"   --jobs 20   -p   --default-resources   slurm_extra="--account=dops-plant-genomics --mail-user=phoebe.freeston@biology.ox.ac.uk"
 ```
+
+test with:
+snakemake \
+  --snakefile workflow/Snakefile \
+  --executor slurm \
+  --configfile config/project.yaml \
+  --config 'workflow={mode: multimer}' \
+  --jobs 1 \
+  -p \
+  --default-resources \
+  slurm_account=dops-plant-genomics \
+  slurm_extra="--mail-user=phoebe.freeston@biology.ox.ac.uk" \
+  -n
+
+  gives:
+  
