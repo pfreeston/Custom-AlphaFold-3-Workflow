@@ -1,19 +1,30 @@
+# Snakemake
 .snakemake/
+
+# Workflow-generated outputs
 work/
 outputs/
 results/
-
 logs/
+
+# SLURM output
 *.out
 *.err
 
+# AlphaFold intermediate files
 *.a3m
 *.sto
 *.hhr
-
 *.npy
 
+# Containers
 *.sif
 singularity/
 
-af3custom/__pycache__
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Reduced workflow while ARC capacity is limited
+inputs/fastas/pathogens/epic2b.fasta
+inputs/fastas/plants/pip1.fasta
