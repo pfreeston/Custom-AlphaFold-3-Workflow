@@ -16,4 +16,4 @@ logs/
 *.sif
 singularity/
 
-__pycache__
+af3custom/__pycache__
