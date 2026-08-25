@@ -135,7 +135,7 @@ rule run_inference:
         slurm_partition="short",
         mem_mb=64000,
         runtime=120,
-        gpus=1,
+        gpu=1,
         slurm_account="dops-plant-genomics",
         slurm_extra="--mail-type=BEGIN,END,FAIL"
     input:
