@@ -135,9 +135,9 @@ rule run_inference:
         slurm_partition="short",
         mem_mb=64000,
         runtime=120,
-        gpu=1,
+        gres="gpu:h100:1",
+        constraint="fabric:HDR|fabric:HDR100",
         slurm_account="dops-plant-genomics",
-        slurm_extra="--mail-type=BEGIN,END,FAIL"
     input:
         json=get_input_json
     output:
