@@ -10,14 +10,14 @@ from af3custom.targets import get_proteins, get_pairs
 proteins = get_proteins(config)
 protein_names = sorted(proteins.keys())
 
-
 JSON_ROOT = config["paths"]["json_root"]
 MONO_JSON_DIR = config["paths"]["monomer_json_dir"]
 MULTI_JSON_DIR = config["paths"]["multimer_json_dir"]
 PIPELINE_DIR = config["paths"]["json_pipeline_dir"]
 RESULTS_DIR = config["paths"]["results_dir"]
-
 MODE = config["workflow"]["mode"]
+
+INPUT_JSON_DIR = MONO_JSON_DIR if MODE == "monomer" else MULTI_JSON_DIR
 
 if MODE == "multimer":
     pairs = get_pairs(config, proteins)
@@ -29,16 +29,16 @@ if MODE == "multimer":
 
 if MODE == "monomer":
     final_targets = expand(f"{RESULTS_DIR}/{{name}}", name=protein_names)
-
 elif MODE == "multimer":
     final_targets = expand(f"{RESULTS_DIR}/{{name}}", name=pair_names)
-
 else:
     raise ValueError(f"Unknown mode: {MODE}")
+
 
 rule all:
     input:
         final_targets
+
 
 # -------------------------
 # STEP 1: MONOMER JSON
@@ -53,11 +53,13 @@ rule make_monomer_json:
         json=f"{MONO_JSON_DIR}/{{name}}.json"
     threads: 1
     resources:
-        slurm_partition="short"    
+        slurm_partition="short"
     run:
         from af3custom.monomer_json_builder import write_monomer_json
+
         Path(MONO_JSON_DIR).mkdir(parents=True, exist_ok=True)
         write_monomer_json(wildcards.name, input.fasta, MONO_JSON_DIR)
+
 
 # -------------------------
 # STEP 2: DATA PIPELINE
@@ -66,7 +68,7 @@ rule make_monomer_json:
 rule data_pipeline:
     wildcard_constraints:
         name=r"[^/]+"
-    threads:8
+    threads: 8
     resources:
         slurm_partition="short",
         mem_mb=64000,
@@ -102,6 +104,7 @@ rule data_pipeline:
         &> {log}
         """
 
+
 # -------------------------
 # STEP 3: MULTIMER JSON
 # -------------------------
@@ -115,9 +118,11 @@ rule build_multimer_json:
     threads: 1
     run:
         from af3custom.multimer_json_builder import build_single_multimer_json
+
         Path(MULTI_JSON_DIR).mkdir(parents=True, exist_ok=True)
         p1, p2 = wildcards.name.split("__")
         build_single_multimer_json(config, p1, p2)
+
 
 # -------------------------
 # STEP 4: INFERENCE
@@ -128,6 +133,7 @@ def get_input_json(wildcards):
         return f"{MONO_JSON_DIR}/{wildcards.name}.json"
     else:
         return f"{MULTI_JSON_DIR}/{wildcards.name}.json"
+
 
 rule run_inference:
     threads: 8
@@ -160,7 +166,7 @@ rule run_inference:
             --bind {params.db_dir}:/root/public_databases \
             --bind {params.model_dir}:/root/models \
             --bind {output.outdir}:/root/af_output \
-            --bind {JSON_ROOT}:/root/af_input \
+            --bind {INPUT_JSON_DIR}:/root/af_input \
             {params.image} \
             python3 /app/alphafold/run_alphafold.py \
             --json_path=/root/af_input/{wildcards.name}.json \
