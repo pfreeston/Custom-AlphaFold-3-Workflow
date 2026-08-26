@@ -26,5 +26,5 @@ __pycache__/
 *.py[cod]
 
 # Reduced workflow while ARC capacity is limited
-inputs/fastas/pathogens/epic2b.fasta
-inputs/fastas/plants/pip1.fasta
+#inputs/fastas/pathogens/epic2b.fasta
+#inputs/fastas/plants/pip1.fasta
