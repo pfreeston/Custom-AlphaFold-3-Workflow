@@ -3,6 +3,8 @@ configfile: "config/project.yaml"
 from pathlib import Path
 from af3custom.targets import get_proteins, get_pairs
 
+localrules: make_monomer_json, build_multimer_json
+
 # -------------------------
 # SETUP
 # -------------------------
